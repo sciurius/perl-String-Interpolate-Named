@@ -1,0 +1,44 @@
+Text-Substitute - Substitute variables in strings
+
+Text::Substitute provides a single function, subst, that takes a
+string and substitutes variables by target texts.
+
+Example:
+
+    use Text::Substitute;
+
+    my $ctl = { vars => { fn => "Johann", ln => "Bach" } };
+    say subst( $ctl, "The famous %{fn} %{ln}." );
+    # Result = "The famous Johann Bach"
+
+Other features are selecting true/false texts:
+
+    "The task is %{done|ready|unfinished}."
+
+Testing specific values:
+
+    "%{instrument=piano|Play this with elbows}"
+
+Selecting one out of a list of values:
+
+    "First customer is %{customer.1}"
+
+SUPPORT AND DOCUMENTATION
+
+Development of this module takes place on GitHub:
+L<https://github.com/sciurius/perl-Text-Substitute>.
+
+You can find documentation for this module with the perldoc command.
+
+    perldoc Text::Substitute
+
+Please report any bugs or feature requests using the issue tracker on
+GitHub.
+
+COPYRIGHT AND LICENCE
+
+Copyright (C) 2018 Johan Vromans
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
