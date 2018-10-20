@@ -26,7 +26,7 @@ Selecting one out of a list of values:
 SUPPORT AND DOCUMENTATION
 
 Development of this module takes place on GitHub:
-L<https://github.com/sciurius/perl-Text-Substitute>.
+https://github.com/sciurius/perl-Text-Substitute.
 
 You can find documentation for this module with the perldoc command.
 
