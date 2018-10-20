@@ -7,6 +7,7 @@ WriteMakefile(
     AUTHOR              => 'Johan Vromans <jv@cpan.org>',
     VERSION_FROM        => 'lib/Text/Substitute.pm',
     ABSTRACT_FROM       => 'lib/Text/Substitute.pm',
+    LICENSE             => 'perl_5',
     PL_FILES            => {},
     CONFIGURE_REQUIRES => {
         "ExtUtils::MakeMaker" => 6.5503,
@@ -15,7 +16,6 @@ WriteMakefile(
 	'Test::More'  => 0,
     },
     META_MERGE => {
-     license   => "perl_5",
      resources => {
 	 license    => "http://dev.perl.org/licenses/",
 	 repository => "https://github.com/sciurius/perl-Text-Substitute",
