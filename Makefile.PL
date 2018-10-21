@@ -8,6 +8,7 @@ WriteMakefile(
     VERSION_FROM        => 'lib/Text/Substitute.pm',
     ABSTRACT_FROM       => 'lib/Text/Substitute.pm',
     PL_FILES            => {},
+    MIN_PERL_VERSION    => "5.010",
     CONFIGURE_REQUIRES => {
         "ExtUtils::MakeMaker" => 6.5503,
     },
