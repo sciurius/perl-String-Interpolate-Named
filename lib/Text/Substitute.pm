@@ -45,7 +45,7 @@ value or not:
     "This book has %{title|title %{title}}"
     "This book has %{title|title %{title}|no title}"
 
-Assuming variable C<title> has the value C"My Book">, in the first
+Assuming variable C<title> has the value C<"My Book">, in the first
 example the text C<"title My Book"> will be substituted. If C<title>
 does not have a value, the empty string is substituted.
 
