@@ -7,7 +7,7 @@ WriteMakefile(
     AUTHOR              => 'Johan Vromans <jv@cpan.org>',
     VERSION_FROM        => 'lib/String/Interpolate/Named.pm',
     ABSTRACT_FROM       => 'lib/String/Interpolate/Named.pm',
-    LICENSE		=> 'perl_5',
+    LICENSE             => 'perl_5',
     PL_FILES            => {},
     CONFIGURE_REQUIRES => {
         "ExtUtils::MakeMaker" => 6.5503,
