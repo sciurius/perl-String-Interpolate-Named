@@ -3,10 +3,11 @@ use warnings;
 use ExtUtils::MakeMaker;
 
 WriteMakefile(
-    NAME                => 'Text::Substitute',
+    NAME                => 'String::Interpolate::Named',
     AUTHOR              => 'Johan Vromans <jv@cpan.org>',
-    VERSION_FROM        => 'lib/Text/Substitute.pm',
-    ABSTRACT_FROM       => 'lib/Text/Substitute.pm',
+    VERSION_FROM        => 'lib/String/Interpolate/Named.pm',
+    ABSTRACT_FROM       => 'lib/String/Interpolate/Named.pm',
+    LICENSE		=> 'perl_5',
     PL_FILES            => {},
     CONFIGURE_REQUIRES => {
         "ExtUtils::MakeMaker" => 6.5503,
@@ -15,11 +16,10 @@ WriteMakefile(
 	'Test::More'  => 0,
     },
     META_MERGE => {
-     license   => "perl_5",
      resources => {
 	 license    => "http://dev.perl.org/licenses/",
-	 repository => "https://github.com/sciurius/perl-Text-Substitute",
-	 bugtracker => "https://github.com/sciurius/perl-Text-Substitute/issues",
+	 repository => "https://github.com/sciurius/perl-String-Interpolate-Named",
+	 bugtracker => "https://github.com/sciurius/perl-String-Interpolate-Named/issues",
      },
     },
 );

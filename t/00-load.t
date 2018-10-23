@@ -3,7 +3,7 @@
 use Test::More tests => 1;
 
 BEGIN {
-	use_ok( 'Text::Substitute' );
+	use_ok( 'String::Interpolate::Named' );
 }
 
-diag( "Testing Text::Substitute $Text::Substitute::VERSION, Perl $], $^X" );
+diag( "Testing String::Interpolate::Named $String::Interpolate::Named::VERSION, Perl $], $^X" );

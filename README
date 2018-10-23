@@ -1,14 +1,14 @@
-Text-Substitute - Substitute variables in strings
+String-Interpolate-Named - Interpolated named arguments in string
 
-Text::Substitute provides a single function, subst, that takes a
-string and substitutes variables by target texts.
+String::Interpolate::Named provides a single function, interpolate,
+that takes a string and substitutes named variables by target texts.
 
 Example:
 
-    use Text::Substitute;
+    use String::Interpolate::Named;
 
-    my $ctl = { vars => { fn => "Johann", ln => "Bach" } };
-    say subst( $ctl, "The famous %{fn} %{ln}." );
+    my $ctl = { args => { fn => "Johann", ln => "Bach" } };
+    say interpolate( $ctl, "The famous %{fn} %{ln}." );
     # Result = "The famous Johann Bach"
 
 Other features are selecting true/false texts:
@@ -26,11 +26,11 @@ Selecting one out of a list of values:
 SUPPORT AND DOCUMENTATION
 
 Development of this module takes place on GitHub:
-https://github.com/sciurius/perl-Text-Substitute.
+https://github.com/sciurius/perl-String-Interpolate-Named.
 
 You can find documentation for this module with the perldoc command.
 
-    perldoc Text::Substitute
+    perldoc String::Interpolate::Named
 
 Please report any bugs or feature requests using the issue tracker on
 GitHub.

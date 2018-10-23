@@ -2,7 +2,7 @@ Changes
 MANIFEST
 Makefile.PL
 README
-lib/Text/Substitute.pm
+lib/String/Interpolate/Named.pm
 t/00-load.t
 t/10-basic.dat
 t/10-basic.t

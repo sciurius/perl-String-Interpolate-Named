@@ -1,5 +1,13 @@
-Revision history for Text-Substitute
+Revision history for String-Interpolate-Named
 
-0.01    Date/time
-        First version, released on an unsuspecting world.
+0.02
+
+	Renamed to String::Interpolate::Named to avoid coflicts with
+	(non-existing!) Text::Substitute.
+	Fix license setting in Makefile.
+	Move development to GitHub.
+
+0.01    2018-10-20 22:35
+
+	Text::Substitute released on an unsuspecting world.
 

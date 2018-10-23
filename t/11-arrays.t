@@ -8,10 +8,10 @@ my $tests = 0;
 
 -d "t" && chdir("t");
 
-use_ok('Text::Substitute');
+use_ok('String::Interpolate::Named');
 $tests++;
 
-my $s = { vars => { title     => "Hi There!",
+my $s = { args => { title     => "Hi There!",
 		    subtitle  => [ "%{capo|CAPO %{}}" ],
 		    capo      => [ 1 ],
 		    key	      => [ "G" ],
@@ -32,7 +32,7 @@ while ( <> ) {
     chomp;
 
     my ( $tpl, $exp ) = split( /\t+/, $_ );
-    my $res = subst( $s, $tpl );
+    my $res = interpolate( $s, $tpl );
     is( $res, $exp, "$tpl -> $exp" );
 
     $tests++;
