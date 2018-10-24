@@ -1,10 +1,18 @@
 Revision history for String-Interpolate-Named
 
-0.02
+0.04
+
+	Require perl 5.10.1 or later due to Unicode problems.
+
+0.03	2018-10-23
+
+	Require perl 5.10 or later for named captures.
+	Fix license setting in Makefile.
+
+0.02	2018-10-23 09:56
 
 	Renamed to String::Interpolate::Named to avoid coflicts with
 	(non-existing!) Text::Substitute.
-	Fix license setting in Makefile.
 	Move development to GitHub.
 
 0.01    2018-10-20 22:35
