@@ -1,5 +1,11 @@
 Revision history for String-Interpolate-Named
 
+0.06
+
+	Add object oriented API.
+	Limit max number of iterations.
+	Rework documentation.
+
 0.05	2018-10-25
 
 	%{} should work only within a %{ ... } construct.
