@@ -16,7 +16,7 @@ String::Interpolate::Named - Interpolated named arguments in string
 
 =cut
 
-our $VERSION = '0.05';
+our $VERSION = '1.00';
 
 =head1 SYNOPSIS
 
@@ -48,6 +48,11 @@ When interpolated, the keys C<fn> and C<ln> are looked up in the hash,
 and the corresponding values are substituted. If no value was found
 for a named argument, nothing is substituted and the C<%{...}> is
 removed.
+
+You can precede C<%>, C<{>, C<}> (and C<|>, see below) with a
+backslash C<\> to hide their special meanings. For example, C<\}> will
+I<not> be considered closing an argument but yield a plain C<}> in the
+text.
 
 =head2 Conditional Interpolation
 
@@ -227,35 +232,40 @@ sub interpolate {
 	$tpl =~ s/\\\{/\x{fdd1}/g;
 	$tpl =~ s/\\\}/\x{fdd2}/g;
 	$tpl =~ s/\\\|/\x{fdd3}/g;
+	$tpl =~ s/\\\%/\x{fdd4}/g;
 
 	# Replace some seqs by a single char for easy matching.
-	$tpl =~ s/\%\{\}/\x{fdd4}/g;
-	$tpl =~ s/\%\{/\x{fdd5}/g;
+	$tpl =~ s/\%\{\}/\x{fdde}/g;
+	$tpl =~ s/\%\{/\x{fddf}/g;
 
 	# %{ key [ .index ] [ = value ] [ | then [ | else ] ] }
 
-	$tpl =~ s; ( \x{fdd5}
+	$tpl =~ s; ( \x{fddf}
 		     (?<key>\w+[-_\w.]*)
 		     (?: (?<op> \= )
-			 (?<test> [^|}\x{fdd5}]*) )?
-		     (?: \| (?<then> [^|}\x{fdd5}]*  )
-			 (?: \| (?<else> [^|}\x{fdd5}]* ) )?
+			 (?<test> [^|}\x{fddf}]*) )?
+		     (?: \| (?<then> [^|}\x{fddf}]*  )
+			 (?: \| (?<else> [^|}\x{fddf}]* ) )?
 		     )?
 		     \}
 		   )
 		 ; _interpolate($ctl, {%+} ) ;exo;
 
 	# Unescape escaped specials.
-	$tpl =~ s/\x{fdd0}/\\/g;
-	$tpl =~ s/\x{fdd1}/\\{/g;
-	$tpl =~ s/\x{fdd2}/\\}/g;
-	$tpl =~ s/\x{fdd3}/\\|/g;
+	$tpl =~ s/\x{fdd0}/\\\\/g;
+	$tpl =~ s/\x{fdd1}/\\\{/g;
+	$tpl =~ s/\x{fdd2}/\\\}/g;
+	$tpl =~ s/\x{fdd3}/\\\|/g;
+	$tpl =~ s/\x{fdd4}/\\\%/g;
 
 	# Restore (some) seqs.
-	$tpl =~ s/\x{fdd4}/%{}/g;
-	$tpl =~ s/\x{fdd5}/%{/g;
+	$tpl =~ s/\x{fdde}/%{}/g;
+	$tpl =~ s/\x{fddf}/%{/g;
 
-	return $tpl if $prev eq $tpl;
+	if ( $prev eq $tpl ) {
+	    $tpl =~ s/\\([%{}|])/$1/g;
+	    return $tpl;
+	}
 	warn("$cnt: $prev -> $tpl\n") if $ctl->{trace};
     }
     Carp::croak("Maximum number of iterations exceeded");
@@ -315,7 +325,7 @@ sub _interpolate {
 	$subst = $i->{else} ? $i->{else} : '';
     }
 
-    $subst =~ s/\x{fdd4}/$val/g;
+    $subst =~ s/\x{fdde}/$val/g;
     return $subst;
 }
 
@@ -345,7 +355,7 @@ Many of the existing template / interpolate / substitute modules.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2018 Johan Vromans, all rights reserved.
+Copyright 2018,2019 Johan Vromans, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
