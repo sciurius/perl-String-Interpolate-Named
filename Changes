@@ -1,7 +1,9 @@
 Revision history for String-Interpolate-Named
 
-0.06
+1.00	2019-10-31
 
+	Fix backslash escapes. \| hides the | from being seen as a |,
+	and leaves a | (not \|) upon completion. Same for \{ and \} .
 	Add object oriented API.
 	Limit max number of iterations.
 	Rework documentation.
