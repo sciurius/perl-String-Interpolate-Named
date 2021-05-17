@@ -11,12 +11,14 @@ my $tests = 0;
 use_ok('String::Interpolate::Named');
 $tests++;
 
-my $args = { title     => "Hi There!",
-	     subtitle  => [ '${capo|CAPO ${}}' ],
-	     capo      => [ 1 ],
-	     key	      => [ "G" ],
-	     h	      => [ "Z" ],
-	     head      => [ "yes" ],
+my $args = { title      => "Hi There!",
+	     subtitle   => [ '${capo|CAPO ${}}' ],
+	     capo       => [ 1 ],
+	     key	=> [ "G" ],
+	     h		=> [ "Z" ],
+	     head	=> [ "yes" ],
+	     true	=> 1,
+	     false	=> 0,
 	   };
 
 my $s = { activator => '$', args => $args };

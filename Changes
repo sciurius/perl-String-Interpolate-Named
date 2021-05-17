@@ -5,6 +5,7 @@ Revision history for String-Interpolate-Named
 	Allow variable lookup using a callback.
 	Allow selection of activator. Caveat emptor.
 	Allow setting of the pattern to match key names. Caveat emptor.
+	Fix problem with true/false parts being false.
 
 1.00	2019-10-31
 

@@ -337,10 +337,13 @@ sub _interpolate {
 	}
     }
     elsif ( $val ne '' ) {
-	$subst = $i->{then} ? $i->{then} : $i->{else} ? '' : $val;
+	$subst = ($i->{then}//'') ne ''
+	  ? $i->{then}
+	  : ($i->{else}//'') ne ''
+	    ? '' : $val;
     }
     else {
-	$subst = $i->{else} ? $i->{else} : '';
+	$subst = ($i->{else}//'') ne '' ? $i->{else} : '';
     }
 
     $subst =~ s/\x{fdde}/$val/g;
