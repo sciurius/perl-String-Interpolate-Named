@@ -1,6 +1,6 @@
 Revision history for String-Interpolate-Named
 
-1.01
+1.01	2021-05-18
 
 	Allow variable lookup using a callback.
 	Allow selection of activator. Caveat emptor.
