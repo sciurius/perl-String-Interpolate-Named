@@ -1,5 +1,10 @@
 Revision history for String-Interpolate-Named
 
+1.02
+
+	Silently provide empty values when an array selector exceeds
+	the number of elements in the array.
+
 1.01	2021-05-18
 
 	Allow variable lookup using a callback.

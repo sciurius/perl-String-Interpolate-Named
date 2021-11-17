@@ -16,7 +16,7 @@ String::Interpolate::Named - Interpolated named arguments in string
 
 =cut
 
-our $VERSION = '1.01';
+our $VERSION = '1.02';
 
 =head1 SYNOPSIS
 
@@ -105,6 +105,8 @@ Assume C<customer> has value C<[ "Jones", "Smith" ]>, then:
     "%{customer.2} will be Jones"
     "%{customer} will be Jones Smith"
 
+When the value exceeds the number of elements in the list, an empty
+value is returned.
 When no element is selected the values are concatenated.
 
 =head2 The Control Hash
@@ -309,8 +311,13 @@ sub _interpolate {
 	if ( UNIVERSAL::isa( $val, 'ARRAY' ) ) {
 	    # 1, 2, ... selects 1st, 2nd value; -1 counts from end.
 	    if ( $inx ) {
-		if ( $inx > 0 && $inx <= @$val ) {
-		    $val = $val->[$inx-1];
+		if ( $inx > 0 ) {
+		    if ( $inx <= @$val ) {
+			$val = $val->[$inx-1];
+		    }
+		    else {
+			$val = "";
+		    }
 		}
 		else {
 		    $val = $val->[$inx];
