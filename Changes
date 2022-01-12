@@ -1,6 +1,6 @@
 Revision history for String-Interpolate-Named
 
-1.02	
+1.02	2022-01-12
 
 	Fix problem with de-escaping \{ \} \| outside of substitution
 	(issue #6);
