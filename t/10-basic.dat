@@ -1,13 +1,20 @@
 # No substitutions
 abcd			abcd
 
-# Percent -> %
+# Lone specials
 ab%cd			ab%cd
-
-# Lone brace
 ab{cd			ab{cd
 ab%{cd			ab%{cd
 ab}cd			ab}cd
+ab\cd			ab\cd
+ab|cd			ab|cd
+ab\{cd			ab\{cd
+ab\}cd			ab\}cd
+ab\|cd			ab\|cd
+ab\%cd			ab\%cd
+ab\\cd			ab\\cd
+ab\&cd			ab\&cd
+abc\			abc\
 
 # Variable
 ab%{head}def		abyesdef

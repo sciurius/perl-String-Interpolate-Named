@@ -259,7 +259,11 @@ sub interpolate {
 
 	# %{ key [ .index ] [ = value ] [ | then [ | else ] ] }
 
-	$tpl =~ s; ( \x{fddf}
+	my $pre  = '';
+	my $post = '';
+	if ( $tpl =~ s; ( ^
+		     (?<pre> .*? )
+		     \x{fddf}
 		     (?<key> $keypat )
 		     (?: (?<op> \= )
 			 (?<test> [^|}\x{fddf}]*) )?
@@ -267,24 +271,39 @@ sub interpolate {
 			 (?: \| (?<else> [^|}\x{fddf}]* ) )?
 		     )?
 		     \}
+		     (?<post> .* )
+		     $
 		   )
-		 ; _interpolate($ctl, {%+} ) ;exo;
-
-	# Unescape escaped specials.
-	$tpl =~ s/\x{fdd0}/\\\\/g;
-	$tpl =~ s/\x{fdd1}/\\\{/g;
-	$tpl =~ s/\x{fdd2}/\\\}/g;
-	$tpl =~ s/\x{fdd3}/\\\|/g;
-	$tpl =~ s/\x{fdd4}/\\$activator/g;
-
-	# Restore (some) seqs.
-	$tpl =~ s/\x{fdde}/$activator."{}"/ge;
-	$tpl =~ s/\x{fddf}/$activator."{"/ge;
-
-	if ( $prev eq $tpl ) {
-	    $tpl =~ s/\\(\Q$activator\E|[%{}|])/$1/g;
-	    return $tpl;
+		      ; _interpolate($ctl, {%+} ) ;exso ) {
+	    $pre  = $+{pre};
+	    $post = $+{post};
 	}
+	else {
+	    $pre = $tpl;
+	    $tpl = '';
+	}
+	for ( $pre, $tpl, $post ) {
+	    # Unescape escaped specials.
+	    s/\x{fdd0}/\\\\/g;
+	    s/\x{fdd1}/\\\{/g;
+	    s/\x{fdd2}/\\\}/g;
+	    s/\x{fdd3}/\\\|/g;
+	    s/\x{fdd4}/\\$activator/g;
+
+	    # Restore (some) seqs.
+	    s/\x{fdde}/$activator."{}"/ge;
+	    s/\x{fddf}/$activator."{"/ge;
+	}
+	$tpl =~ s/\\(\Q$activator\E|[{}|])/$1/g;
+	warn ("'$prev' => '$pre' '$tpl' '$post'\n" ) if $ctl->{trace};
+
+	my $t = $pre . $tpl . $post;
+	if ( $prev eq $t ) {
+	    # De-escape in subst part only (issue #6);
+	    $tpl =~ s/\\(\Q$activator\E|[{}|])/$1/g;
+	    return $pre . $tpl . $post;
+	}
+	$tpl = $t;
 	warn("$cnt: $prev -> $tpl\n") if $ctl->{trace};
     }
     Carp::croak("Maximum number of iterations exceeded");
