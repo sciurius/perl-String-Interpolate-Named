@@ -294,7 +294,7 @@ sub interpolate {
 	    s/\x{fdde}/$activator."{}"/ge;
 	    s/\x{fddf}/$activator."{"/ge;
 	}
-	$tpl =~ s/\\(\Q$activator\E|[{}|])/$1/g;
+	$tpl =~ s/\\(\Q$activator\E|[{}|\\])/$1/g;
 	warn ("'$prev' => '$pre' '$tpl' '$post'\n" ) if $ctl->{trace};
 
 	my $t = $pre . $tpl . $post;
@@ -363,13 +363,10 @@ sub _interpolate {
 	}
     }
     elsif ( $val ne '' ) {
-	$subst = ($i->{then}//'') ne ''
-	  ? $i->{then}
-	  : ($i->{else}//'') ne ''
-	    ? '' : $val;
+	$subst = $i->{then} // $val;
     }
     else {
-	$subst = ($i->{else}//'') ne '' ? $i->{else} : '';
+	$subst = $i->{else} // '';
     }
 
     $subst =~ s/\x{fdde}/$val/g;

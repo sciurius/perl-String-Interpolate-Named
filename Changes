@@ -1,5 +1,10 @@
 Revision history for String-Interpolate-Named
 
+1.03	
+
+	Fix substituting empty in %{key|} even if key has a value.
+	Fix some edge cases with nesting and escaping.
+
 1.02	2022-01-12
 
 	Fix problem with de-escaping \{ \} \| outside of substitution
