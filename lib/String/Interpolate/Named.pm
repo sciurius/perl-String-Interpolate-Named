@@ -265,6 +265,7 @@ sub interpolate {
 		     (?<pre> .*? )
 		     \x{fddf}
 		     (?<key> $keypat )
+		     (?: : (?<fmt> [-+]? \d+ (?: \. \d+ )? [sdfx] ) )?
 		     (?: (?<op> \= )
 			 (?<test> [^|}\x{fddf}]*) )?
 		     (?: \| (?<then> [^|}\x{fddf}]*  )
@@ -353,9 +354,13 @@ sub _interpolate {
     }
 
     my $subst = '';
+    my $oval = $val;
+    if ( $i->{fmt} ) {
+	$val = sprintf( '%'.$i->{fmt}, $val );
+    }
     if ( $i->{op} ) {
 	my $test = $i->{test} // '';
-	if ( $i->{op} eq '=' && $val eq $test ) {
+	if ( $i->{op} eq '=' && $oval eq $test ) {
 	    $subst = $i->{then} // '';
 	}
 	else {
@@ -371,6 +376,42 @@ sub _interpolate {
 
     $subst =~ s/\x{fdde}/$val/g;
     return $subst;
+}
+
+use Scalar::Util qw(looks_like_number);
+sub qquote {
+    my ( $arg, $force ) = @_;
+    for ( $arg ) {
+	s/([\\\"])/\\$1/g;
+	s/([[:^print:]])/sprintf("\\u%04x", ord($1))/ge;
+	return $_ unless /[\\\s]/ || $force;
+	return qq("$_");
+    }
+}
+sub pv {
+    my $val   = pop;
+    my $label = pop // "";
+
+    my $suppressundef;
+    if ( $label =~ /\?$/ ) {
+	$suppressundef++;
+	$label = $';
+    }
+    if ( defined $val ) {
+	if ( looks_like_number($val) ) {
+	    $val = sprintf("%.3f", $val);
+	    $val =~ s/0+$//;
+	    $val =~ s/\.$//;
+	}
+	else {
+	    $val = qquote( $val, 1 );
+	}
+    }
+    else {
+	return "" if $suppressundef;
+	$val = "<undef>"
+    }
+    defined wantarray ? $label.$val : warn($label.$val."\n");
 }
 
 =head1 REQUIREMENTS

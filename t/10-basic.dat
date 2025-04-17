@@ -70,3 +70,8 @@ X%{head|x%{foo|ab|f%{}g}z}Y	XxfgzY
 
 # Transpose.
 %{key}		G
+
+# Formatting
+%{capo:02d}	01
+%{capo:02d=1|%{}|no}	01
+[%{capo:6.2s}]	[     1]
