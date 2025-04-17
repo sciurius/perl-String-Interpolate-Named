@@ -73,6 +73,12 @@
 
 # Formatting
 %{capo:02d}	01
+%{capo=1|%{capo:02d}|no}	01
 %{capo=1|%{%{capo}:02d}|no}	01
 [%{capo:6.2s}]	[     1]
 %{1:02d}	01
+
+# Case changers
+%{title:uc}	HI THERE!
+%{title:lc}	hi there!
+%{title:ucfirst}	Hi There!

@@ -265,7 +265,7 @@ sub interpolate {
 		     (?<pre> .*? )
 		     \x{fddf}
 		     (?<key> $keypat )
-		     (?: : (?<fmt> [-+]? \d+ (?: \. \d+ )? [sdfx] ) )?
+		     (?: : (?<fmt> .*? ) )?
 		     (?: (?<op> \= )
 			 (?<test> [^|}\x{fddf}]*) )?
 		     (?: \| (?<then> [^|}\x{fddf}]*  )
@@ -359,8 +359,12 @@ sub _interpolate {
 
     my $subst = '';
     my $oval = $val;
-    if ( $i->{fmt} ) {
-	$val = sprintf( '%'.$i->{fmt}, $val );
+    for ( $i->{fmt} ) {
+	last unless $_;
+	if    ( $_ eq 'lc' ) { $val = lc($val) }
+	elsif ( $_ eq 'uc' ) { $val = uc($val) }
+	elsif ( $_ eq 'ucfirst' ) { $val = ucfirst($val) }
+	else  { $val = sprintf( '%'.$i->{fmt}, $val ) }
     }
     if ( $i->{op} ) {
 	my $test = $i->{test} // '';
