@@ -324,7 +324,11 @@ sub _interpolate {
 	( $key, $inx ) = ( $1, $2 );
     }
 
-    my $t = ref($m) eq 'CODE' ? $m->($key) : $m->{$key};
+    my $t = ref($m) eq 'CODE'
+      ? $m->($key)
+      : $i->{fmt}
+        ? $m->{$key}//$key	# in case of formatting, use key if no value
+        : $m->{$key};
     if ( defined $t ) {
 	$val = $t;
 
