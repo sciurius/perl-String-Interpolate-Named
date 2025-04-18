@@ -1,5 +1,9 @@
 Revision history for String-Interpolate-Named
 
+1.04	2025-04-18
+
+	Support basic formatting like case changing and printf formats.
+	
 1.03	2022-01-13
 
 	Fix substituting empty in %{key|} even if key has a value.

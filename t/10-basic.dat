@@ -72,19 +72,19 @@ X%{head|x%{foo|ab|f%{}g}z}Y	XxfgzY
 %{key}		G
 
 # Formatting
-%{capo:02d}	01
 %{capo:%02d}	01
-%{capo=1|%{capo:02d}|no}	01
+%{capo=1|%{capo:%02d}|no}	01
 %{capo:%02d=01|yes%{}|no}	yes01
-[%{capo:6.2s}]	[     1]
+[%{capo:%6.2s}]	[     1]
 
 # Case changers
 %{title:uc}	HI THERE!
 %{title:lc}	hi there!
 %{title:ic}	Hi There!
-%{title:uc:ic}	Hi There!
-%{title:sc}	Hi there!
+%{title:lc:ic}	Hi There!
+%{title:sc}	Hi There!
+%{title:lc:sc}	Hi there!
 
 # Formatting doesn't interfere with definedness
-X%{1:02d}Y	XY
+X%{1:%02d}Y	XY
 X%{hexd:sc}Y	XY

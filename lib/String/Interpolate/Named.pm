@@ -16,7 +16,7 @@ String::Interpolate::Named - Interpolated named arguments in string
 
 =cut
 
-our $VERSION = '1.03';
+our $VERSION = '1.04';
 
 =head1 SYNOPSIS
 
@@ -108,6 +108,65 @@ Assume C<customer> has value C<[ "Jones", "Smith" ]>, then:
 When the value exceeds the number of elements in the list, an empty
 value is returned.
 When no element is selected the values are concatenated.
+
+=head2 Format modifiers
+
+A named variable may have I<format modifiers> attached to perform
+formatting operations on the substituted value.
+Format modifiers start with a colon C<:>.
+
+Assuming argument C<title> has the value C<"My Book">, then
+C<"%{title:lc}">
+will yield the title in lowercase C<"my book">.
+
+The following format modifiers are available:
+
+=over 6
+
+=item C<:lc>
+
+Yields the substituted value in all lower case.
+
+Using the example above, this will be C<"my book">.
+
+=item C<:uc>
+
+Yields the substituted value in all upper case.
+
+Using the example above, this will be C<"MY BOOK">.
+
+=item C<:ic>
+
+Yields the substituted value with initial caps, e.g. the first letter
+of each word is capitalized.
+
+Using the example above, this will be C<"My Book">.
+Indeed, no difference since the value is already correctly cased.
+
+To enforce lower case before applying initial case, use format modifiers
+C<:lc:ic>.
+
+=item C<:sc>
+
+Yields the substituted value with an initial cap and the rest lower case.
+
+Using the example above, this will be C<"My Book">.
+Again, no difference since the value already has an initial capital.
+
+To enforce lower case before applying initial case, use format modifiers
+C<:lc:sc>. Now the result will be C<"My book">.
+
+=item C<:%>I<fmt>
+
+Apply standard printf() formatting, e.g. C<%{key:%03d}> yields the numeric
+value of C<key> as a 3-digit string, adding leading zeroes if necessary.
+
+=back
+
+Note that, when combining formatting and conditional interpolation,
+you must check for the I<formatted> value:
+
+    "This takes %{days:%02d=01|%{} day|%{} days}"
 
 =head2 The Control Hash
 
@@ -359,13 +418,16 @@ sub _interpolate {
 	last unless my $fmt = $_;
 	if    ( $fmt eq 'lc' ) { $val = lc($val) }
 	elsif ( $fmt eq 'uc' ) { $val = uc($val) }
-	elsif ( $fmt eq 'sc' ) { $val = ucfirst(lc $val) }
+	elsif ( $fmt eq 'sc' ) { $val = ucfirst($val) }
 	elsif ( $fmt eq 'ic' ) {
-	    $val = join('', map { ucfirst } (split( /(^|\s+|-)/, lc($val) )));
+	    $val = join('', map { ucfirst } (split( /(^|\s+|-)/, $val )));
 	}
-	else  {
+	elsif ( $fmt =~ /^%/ ) {
 	    no warnings qw(numeric);
-	    $val = sprintf( $fmt =~ s/^(?!%)/%/r, $val );
+	    $val = sprintf( $fmt, $val );
+	}
+	else {
+	    Carp::croak("Invalid format code '$fmt'")
 	}
     }
     if ( $i->{op} ) {
@@ -450,7 +512,7 @@ Many of the existing template / interpolate / substitute modules.
 
 =head1 COPYRIGHT & LICENSE
 
-Copyright 2018,2019 Johan Vromans, all rights reserved.
+Copyright 2018,2025 Johan Vromans, all rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
 under the same terms as Perl itself.
