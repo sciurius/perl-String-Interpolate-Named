@@ -324,13 +324,9 @@ sub _interpolate {
 	( $key, $inx ) = ( $1, $2 );
     }
 
-    my $t = ref($m) eq 'CODE'
-      ? $m->($key)
-      : $i->{fmt}
-        ? $m->{$key}//$key	# in case of formatting, use key if no value
-        : $m->{$key};
-    if ( defined $t ) {
-	$val = $t;
+    my $newval = ref($m) eq 'CODE' ? $m->($key) : $m->{$key};
+    if ( defined $newval ) {
+	$val = $newval;
 
 	if ( UNIVERSAL::isa( $val, 'ARRAY' ) ) {
 	    # 1, 2, ... selects 1st, 2nd value; -1 counts from end.
@@ -358,17 +354,23 @@ sub _interpolate {
     }
 
     my $subst = '';
-    my $oval = $val;
-    for ( $i->{fmt} ) {
-	last unless $_;
-	if    ( $_ eq 'lc' ) { $val = lc($val) }
-	elsif ( $_ eq 'uc' ) { $val = uc($val) }
-	elsif ( $_ eq 'ucfirst' ) { $val = ucfirst($val) }
-	else  { $val = sprintf( '%'.$i->{fmt}, $val ) }
+    for ( split( ':', $i->{fmt}//'' ) ) {
+	last unless defined $newval;
+	last unless my $fmt = $_;
+	if    ( $fmt eq 'lc' ) { $val = lc($val) }
+	elsif ( $fmt eq 'uc' ) { $val = uc($val) }
+	elsif ( $fmt eq 'sc' ) { $val = ucfirst(lc $val) }
+	elsif ( $fmt eq 'ic' ) {
+	    $val = join('', map { ucfirst } (split( /(^|\s+|-)/, lc($val) )));
+	}
+	else  {
+	    no warnings qw(numeric);
+	    $val = sprintf( $fmt =~ s/^(?!%)/%/r, $val );
+	}
     }
     if ( $i->{op} ) {
 	my $test = $i->{test} // '';
-	if ( $i->{op} eq '=' && $oval eq $test ) {
+	if ( $i->{op} eq '=' && $val eq $test ) {
 	    $subst = $i->{then} // '';
 	}
 	else {
