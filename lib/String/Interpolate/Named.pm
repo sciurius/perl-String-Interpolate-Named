@@ -101,13 +101,14 @@ index (period and a number) to the named argument.
 
 Assume C<customer> has value C<[ "Jones", "Smith" ]>, then:
 
-    "%{customer.1} will be Smith"
-    "%{customer.2} will be Jones"
     "%{customer} will be Jones Smith"
+    "%{customer.0} will be Jones Smith"
+    "%{customer.1} will be Jones"
+    "%{customer.2} will be Smith"
 
 When the value exceeds the number of elements in the list, an empty
 value is returned.
-When no element is selected the values are concatenated.
+Index zero, or no index, will return all values concatenated.
 
 =head2 Format modifiers
 
@@ -155,6 +156,20 @@ Again, no difference since the value already has an initial capital.
 
 To enforce lower case before applying initial case, use format modifiers
 C<:lc:sc>. Now the result will be C<"My book">.
+
+=item C<:lpad(>I<N>C<)>   C<:lpad(>I<N>C<,>I<S>C<)>
+
+Pads the value by repeatedly prepending the string I<S> until the
+total width is I<N>.
+
+If I<S> is omitted, uses spaces.
+
+=item C<:rpad(>I<N>C<)>   C<:rpad(>I<N>C<,>I<S>C<)>
+
+Pads the value by repeatedly appending the string I<S> until the
+total width is I<N>.
+
+If I<S> is omitted, uses spaces.
 
 =item C<:%>I<fmt>
 
@@ -421,6 +436,19 @@ sub _interpolate {
 	elsif ( $fmt eq 'sc' ) { $val = ucfirst($val) }
 	elsif ( $fmt eq 'ic' ) {
 	    $val = join('', map { ucfirst } (split( /(^|\s+|-)/, $val )));
+	}
+	elsif ( my ( $lr, $len, $str ) =
+		$fmt =~ /^([lr])pad\((\d+)(?:,(.*?))?\)$/ ) {
+	    $str //= " ";
+	    if ( ( my $need = $len - length($val) ) > 0 ) {
+		my $pad = $str x (1+int(($len-1)/length($str)));
+		if ( $lr eq 'l' ) {
+		    $val = substr( $pad, 0, $need ) . $val;
+		}
+		else {
+		    $val = $val . substr( $pad, 0, $need );
+		}
+	    }
 	}
 	elsif ( $fmt =~ /^%/ ) {
 	    no warnings qw(numeric);

@@ -88,3 +88,17 @@ X%{head|x%{foo|ab|f%{}g}z}Y	XxfgzY
 # Formatting doesn't interfere with definedness
 X%{1:%02d}Y	XY
 X%{hexd:sc}Y	XY
+
+# Padding
+X%{key:lpad(0)}Y	XGY
+X%{key:lpad(4)}Y	X   GY
+X%{key:lpad(4,-)}Y	X---GY
+X%{key:lpad(4,xy)}Y	XxyxGY
+X%{head:lpad(2)}Y	XyesY
+X%{head:lpad(3)}Y	XyesY
+X%{key:rpad(4)}Y	XG   Y
+X%{key:rpad(4,-)}Y	XG---Y
+X%{key:rpad(4,xy)}Y	XGxyxY
+X%{head:rpad(2)}Y	XyesY
+X%{head:rpad(3)}Y	XyesY
+
