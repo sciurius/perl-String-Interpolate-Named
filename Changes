@@ -1,6 +1,6 @@
 Revision history for String-Interpolate-Named
 
-1.05
+1.05	2025-04-21
 
 	Added padding and replace functions.
 	Disable 'Unicode character is illegal' warnings for older perls.

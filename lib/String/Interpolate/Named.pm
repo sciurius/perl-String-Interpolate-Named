@@ -19,7 +19,7 @@ String::Interpolate::Named - Interpolated named arguments in string
 
 =cut
 
-our $VERSION = '1.04';
+our $VERSION = '1.05';
 
 =head1 SYNOPSIS
 
