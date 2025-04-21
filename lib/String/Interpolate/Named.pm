@@ -7,6 +7,9 @@ use strict;
 use utf8;
 use Carp qw( carp croak );
 
+# Disable 'Unicode character 0xfddX is illegal' warnings.
+no if $] < 5.014, q|warnings|, qw(utf8);
+
 use parent 'Exporter';
 our @EXPORT = qw( interpolate );
 
@@ -171,6 +174,12 @@ total width is I<N>.
 
 If I<S> is omitted, uses spaces.
 
+=item C<:replace(>I<SRC>C<,>I<DST>C<)>
+
+Replaces all occurrences of I<STR> by I<DST>,
+
+If I<S> is omitted, uses spaces.
+
 =item C<:%>I<fmt>
 
 Apply standard printf() formatting, e.g. C<%{key:%03d}> yields the numeric
@@ -182,6 +191,10 @@ Note that, when combining formatting and conditional interpolation,
 you must check for the I<formatted> value:
 
     "This takes %{days:%02d=01|%{} day|%{} days}"
+
+You can prevent a colon from splitting formatters with a backslash:
+
+     %{title:replace( ,\:)}
 
 =head2 The Control Hash
 
@@ -428,35 +441,29 @@ sub _interpolate {
     }
 
     my $subst = '';
-    for ( split( ':', $i->{fmt}//'' ) ) {
+    for ( split( /(?<!\\):/, $i->{fmt}//'' ) ) {
 	last unless defined $newval;
-	last unless my $fmt = $_;
+	next unless my $fmt = $_;
+
+	# Simple formatters.
 	if    ( $fmt eq 'lc' ) { $val = lc($val) }
 	elsif ( $fmt eq 'uc' ) { $val = uc($val) }
 	elsif ( $fmt eq 'sc' ) { $val = ucfirst($val) }
-	elsif ( $fmt eq 'ic' ) {
-	    $val = join('', map { ucfirst } (split( /(^|\s+|-)/, $val )));
+	elsif ( $fmt eq 'ic' ) { $val = f_ic($val) }
+
+	# Functions.
+	elsif ( $fmt =~ /^([lr])pad\((\d+)(?:,(.*?))?\)$/ ) {
+	    $val = f_pad( $val, $1, $2, $3 );
 	}
-	elsif ( my ( $lr, $len, $str ) =
-		$fmt =~ /^([lr])pad\((\d+)(?:,(.*?))?\)$/ ) {
-	    $str //= " ";
-	    if ( ( my $need = $len - length($val) ) > 0 ) {
-		my $pad = $str x (1+int(($len-1)/length($str)));
-		if ( $lr eq 'l' ) {
-		    $val = substr( $pad, 0, $need ) . $val;
-		}
-		else {
-		    $val = $val . substr( $pad, 0, $need );
-		}
-	    }
+
+	elsif ( $fmt =~ /^replace\((.+?),(.*?)\)$/ ) {
+	    $val = f_replace( $val, $1, $2 );
 	}
-	elsif ( $fmt =~ /^%/ ) {
-	    no warnings qw(numeric);
-	    $val = sprintf( $fmt, $val );
-	}
-	else {
-	    Carp::croak("Invalid format code '$fmt'")
-	}
+
+	# Printf formatting.
+	elsif ( $fmt =~ /^%/ ) { $val = f_printf( $val, $fmt ) }
+
+	else { Carp::croak("Invalid format code '$fmt'"); }
     }
     if ( $i->{op} ) {
 	my $test = $i->{test} // '';
@@ -478,40 +485,38 @@ sub _interpolate {
     return $subst;
 }
 
-use Scalar::Util qw(looks_like_number);
-sub qquote {
-    my ( $arg, $force ) = @_;
-    for ( $arg ) {
-	s/([\\\"])/\\$1/g;
-	s/([[:^print:]])/sprintf("\\u%04x", ord($1))/ge;
-	return $_ unless /[\\\s]/ || $force;
-	return qq("$_");
-    }
-}
-sub pv {
-    my $val   = pop;
-    my $label = pop // "";
+# Formatter functions.
+# First arg = $val.
+# Return new value.
 
-    my $suppressundef;
-    if ( $label =~ /\?$/ ) {
-	$suppressundef++;
-	$label = $';
+sub f_ic {
+    my ( $val ) = @_;
+    join('', map { ucfirst } (split( /(^|\s+|-)/, $val )));
+}
+
+sub f_pad {
+    my ( $val, $lr, $len, $str ) = @_;
+    $str //= " ";
+    return $val unless ( my $need = $len - length($val) ) > 0;
+    my $pad = $str x (1+int(($len-1)/length($str)));
+    if ( $lr eq 'l' ) {
+	return substr( $pad, 0, $need ) . $val;
     }
-    if ( defined $val ) {
-	if ( looks_like_number($val) ) {
-	    $val = sprintf("%.3f", $val);
-	    $val =~ s/0+$//;
-	    $val =~ s/\.$//;
-	}
-	else {
-	    $val = qquote( $val, 1 );
-	}
-    }
-    else {
-	return "" if $suppressundef;
-	$val = "<undef>"
-    }
-    defined wantarray ? $label.$val : warn($label.$val."\n");
+    $val . substr( $pad, 0, $need );
+}
+
+sub f_replace {
+    my ( $val, $rep, $str ) = @_;
+    $val =~ s/\Q$rep\E/$str/g;
+    $val;
+}
+
+sub f_printf {
+    my ( $val, $fmt ) = @_;
+    # A common problem is when a numeric format does not
+    # have a value to format. Suppress the warning.
+    no warnings qw(numeric);
+    sprintf( $fmt, $val );
 }
 
 =head1 REQUIREMENTS
@@ -547,4 +552,4 @@ under the same terms as Perl itself.
 
 =cut
 
-1; # End of String::Interpolate::Named
+1;
